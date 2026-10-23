@@ -243,6 +243,10 @@ button,input{font:inherit;color:inherit}
 .ul,.ol{margin:0;padding-left:1.4em;display:grid;gap:4px;max-width:70ch}
 .ol li::marker{font:600 13px var(--f-mono);color:var(--ink2)}
 .blurbox{position:relative}
+.banner .gal-b img{aspect-ratio:auto;object-fit:contain}
+.gi-top{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:18px;align-items:start}
+.gal-b.gi-card img{aspect-ratio:auto;object-fit:contain}
+@media (max-width:540px){.gi-top{grid-template-columns:minmax(0,1fr)}.gi-card{max-width:180px}}
 .gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .gal figure{margin:0;display:grid;gap:4px;align-content:start}
 .gal-b{display:block;width:100%;padding:0;border:2px solid;border-color:var(--lo2) var(--hi) var(--hi) var(--lo2);background:#000;cursor:zoom-in}
@@ -382,6 +386,8 @@ Object.assign(IMG,{"chrollo": "img/db/chrollo.png", "uvogin": "img/db/uvogin.png
 /* 념 이미지·영상 (사용자 제공) */
 Object.assign(IMG,{"n-hex": "img/db/n-hex.webp", "n-rate": "img/db/n-rate.webp", "n-chart": "img/db/n-chart.webp", "n-water": "img/db/n-water.webp", "n-video": "img/db/n-video.mp4"});
 /* 십이지·협회 본부·헌터 카드 이미지 (사용자 제공) */
+/* 그리드 아일랜드 카드·포스터 이미지 (사용자 제공) */
+Object.assign(IMG,{"gi-card": "img/db/gi-card.jpg", "gi-poster": "img/db/gi-poster.webp"});
 Object.assign(IMG,{"c-types": "img/db/c-types.jpg", "c-blue": "img/db/c-blue.jpg", "c-photo": "img/db/c-photo.jpg"});
 Object.assign(IMG,{"z-lineup": "img/db/z-lineup.webp", "z-meeting": "img/db/z-meeting.jpg", "z-back": "img/db/z-back.webp", "z-factions": "img/db/z-factions.webp", "z-teams": "img/db/z-teams.webp", "a-hq": "img/db/a-hq.webp"});
 /* ---------------- DATA ---------------- */
@@ -895,7 +901,7 @@ return R.map(([id,wiki,name,en,type,org,lvl,arc,sum,ab,spoil,rel,info])=>P({id,w
 ...[
  ["w-series","작품 개요","HUNTER×HUNTER · Series","당찬 소년 곤이 아버지를 찾아 나서면서 엄청난 모험의 세계로 뛰어드는 이야기. 시골 소년 곤은 보물과 마수, 때로는 사람까지 추적하는 특별한 존재인 '헌터'가 되려 한다.",
   [["원제","HUNTER×HUNTER"],["작가","토가시 요시히로"],["영어판 출판","VIZ Media"],["VIZ 소개 문구","Plucky Gon's quest to find his dad leads him into a whole world of crazy adventure."]],
-  ["w-author","w-viz","w-anime","hunter","gon","ging"]],
+  ["w-author","w-viz","w-anime","w-gi","hunter","gon","ging"]],
  ["w-author","토가시 요시히로","冨樫義博 · Yoshihiro Togashi","『HUNTER×HUNTER』의 작가. 1986년, 스무 살에 데즈카 오사무 상을 받으며 만화가로 데뷔했다. 『유유백서』(1990~1994)와 『레벨 E』를 거쳐 『HUNTER×HUNTER』를 연재했다.",
   [["데뷔","1986년 (20세)"],["수상","데즈카 오사무 상"],["대표작","『유유백서』(1990~1994), 『레벨 E』, 『HUNTER×HUNTER』"]],
   ["w-series","w-viz"]],
@@ -909,6 +915,24 @@ return R.map(([id,wiki,name,en,type,org,lvl,arc,sum,ab,spoil,rel,info])=>P({id,w
  {cat:"work",id:"w-gallery",name:"이미지 자료실",alt:"Image Archive · 갤러리",lvl:"공개",kv:[],
   sum:"사용자가 모은 『HUNTER×HUNTER』 이미지 28장을 분류해 둔 자료실이다. 공식 일러스트, 애니메이션 장면, 원작 컷, 팬아트, 짧은 GIF가 섞여 있다. 이미지를 누르면 크게 볼 수 있다.",
   rel:["w-series","w-anime","gon","killua","kurapika","leorio","hisoka","chrollo","meruem","pitou","kite"]},
+ {cat:"work",id:"w-gi",name:"그리드 아일랜드",alt:"グリードアイランド · Greed Island",lvl:"공개",
+  note:"자료: 이 사이트의 인물 기록(진 프릭스·드원·리스트 등)과 원작 그리드 아일랜드 편 · 이미지: 사용자 제공",
+  fig:{src:"gi-card",cap:"주문 카드 No.1039 「동행(アカンパニー · Accompany)」. 오른쪽 위 F-130은 등급 F, 카드화 한도 130장이라는 뜻이다"},
+  sum:"진 프릭스를 비롯한 제작자 11명이 만든 념 능력자 전용 게임. 메모리 카드와 반지를 가지고 게임기에 념을 쏟으면 플레이어가 게임 속 섬으로 들어간다. 목표는 지정 포켓 카드 100종을 모두 모으는 것이다.",
+  kv:[["기종","조이스테이션"],["플레이 조건","념 능력자만 들어갈 수 있다"],["제작","진 프릭스 외 11명. 이름은 제작자들의 이니셜을 모아 지었다"],["클리어 조건","지정 포켓 카드 100종(No.000~099)을 모두 모은다"],["클리어 보상","지정 포켓 카드 3장을 현실로 가지고 나올 수 있다"],["등장","그리드 아일랜드 편"]],
+  secs:[
+   {h:"카드 체계",p:"게임 속 모든 아이템과 마법은 카드로 존재한다. 플레이어는 '북(Book)'이라고 외쳐 카드를 넣어 두는 바인더를 불러낸다.",
+    table:{cols:["구분","번호","설명"],rows:[
+     ["지정 포켓 카드","No.000~099","클리어에 필요한 100종. 카드마다 등급(SS~H)과 카드화 한도 매수가 정해져 있다"],
+     ["주문 카드","No.1001~1040","이동·공격·방어·정보 효과를 내는 40종. 다른 플레이어의 카드를 빼앗거나 지키는 데 쓴다"]]}},
+   {h:"카드 일람 포스터",p:"지정 포켓 카드와 주문 카드를 한 장에 모은 포스터. 이미지를 누르면 크게 볼 수 있다.",
+    fig:{src:"gi-poster",zoom:true,cap:"「그리드 아일랜드 지정 포켓 카드 일람」과 「주문 카드 일람」 포스터 (상품 『HUNTER×HUNTER 그리드 아일랜드 퍼펙트 컬렉터블 세트』 홍보 이미지)"}},
+   {h:"줄거리",list:[
+     "곤은 진이 남긴 메모리 카드와 반지를 찾아 게임에 들어간다. 안내원 에타가 진의 음성 메시지를 들려준다.",
+     "곤과 키르아는 게임 안에서 비스킷 크루거에게 념의 기초부터 다시 수련받는다.",
+     "곤 일행은 카드 100종을 모아 게임을 클리어하고, 게임 마스터 드원과 리스트를 만난다.",
+     "곤은 'Ging'의 아나그램인 'Nigg'에게 이동하지만, 키르아와 함께 왔기 때문에 진이 아니라 카이토를 만나게 된다."],spoil:true}],
+  rel:["ging","gon","killua","biscuit","dwun","list","tsezguerra","goreinu","binolt","kite"]},
 ];
 const BY = Object.fromEntries(DB.map(d=>[d.id,d]));
 /* 념 이론 항목에 붙이는 이미지·영상 */
@@ -1181,9 +1205,9 @@ document.querySelectorAll(".chips .bv").forEach(c=>c.addEventListener("click",()
 }));
 $("#spoil").addEventListener("change",()=>{store.set("hw-spoil",$("#spoil").checked?"1":"0"); if(current) open(current,true);});
 if(store.get("hw-spoil")==="1") $("#spoil").checked=true;
-const HINTS=["곤","히소카","환영여단","조작계","원","십계명","별 등급","토가시"];
+const HINTS=["곤","히소카","환영여단","조작계","원","십계명","별 등급","그리드 아일랜드","토가시"];
 $("#hints").innerHTML="추천 검색어: "+HINTS.map(h=>`<button type="button" data-h="${esc(h)}">${esc(h)}</button>`).join(" ");
-$("#hints").addEventListener("click",e=>{const b=e.target.closest("button[data-h]"); if(!b) return; $("#q").value=b.dataset.h; $("#searchForm").requestSubmit();});
+$("#hints").addEventListener("click",e=>{const b=e.target.closest("button[data-h]"); if(!b) return; $("#q").value=b.dataset.h; renderList(); $("#searchForm").requestSubmit();});
 
 /* ---------------- VIEW ---------------- */
 function hexSVG(type){
@@ -1244,7 +1268,11 @@ function secHTML(d,s){
   if(s.spoil) inner=`<div class="blurbox${show?"":" hide"}">${inner}${show?"":`<button type="button" class="bv" data-reveal="${d.id}">원작 전개가 포함된 내용 보기</button>`}</div>`;
   return `<section class="sec"><h3>${esc(s.h)}</h3>${inner}</section>`;
 }
-function figure(f){return IMG[f.src]?`<figure class="banner inset"><img src="${IMG[f.src]}" alt="${esc(f.cap)}" loading="lazy" decoding="async"><figcaption>${esc(f.cap)}</figcaption></figure>`:"";}
+function figure(f){
+  if(!IMG[f.src]) return "";
+  const img=`<img src="${IMG[f.src]}" alt="${esc(f.cap)}" loading="lazy" decoding="async">`;
+  return `<figure class="banner inset">${f.zoom?`<button type="button" class="gal-b" data-zoom="${f.src}" data-cap="${esc(f.cap)}" aria-label="${esc(f.cap)} 크게 보기">${img}</button>`:img}<figcaption>${esc(f.cap)}</figcaption></figure>`;
+}
 function head(d,kicker,extra){
   return `<div><div class="v-kicker">${kicker}</div><h2 class="v-name"${d.cat==="type"?` style="color:${TCOLOR[d.name]}"`:""}>${esc(d.name)}</h2><div class="v-alt">${esc(d.alt)}</div>${extra||""}</div>`;
 }
@@ -1295,6 +1323,14 @@ function body(d){
     <p class="v-sum">${esc(d.sum)}</p>
     ${d.secs.map(s=>secHTML(d,s)).join("")}
     <p class="note">이미지: 사용자 제공 자료. 작품 이미지의 저작권은 원저작자에게, 팬아트의 저작권은 각 작가에게 있다.</p>
+    ${relBlock(d)}`;
+  }
+  if(d.id==="w-gi"){
+    return `${head(d,"Game Record · Greed Island")}
+    <div class="gi-top"><button type="button" class="gal-b gi-card" data-zoom="${d.fig.src}" data-cap="${esc(d.fig.cap)}" aria-label="${esc(d.fig.cap)} 크게 보기"><img src="${IMG[d.fig.src]}" alt="${esc(d.fig.cap)}" decoding="async"></button><p class="v-sum">${esc(d.sum)}</p></div>
+    <section class="sec"><h3>기록</h3><dl class="kv">${d.kv.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl></section>
+    ${d.secs.map(s=>secHTML(d,s)).join("")}
+    <p class="note">${esc(d.note)}</p>
     ${relBlock(d)}`;
   }
   if(d.cat==="work"){
