@@ -36,6 +36,8 @@ button,input{font:inherit;color:inherit}
 .bv{appearance:none;cursor:pointer;background:var(--paper3) var(--noise);color:var(--ink);border:2px solid;border-color:var(--hi) var(--lo2) var(--lo2) var(--hi);padding:5px 14px;font-weight:500;letter-spacing:.02em}
 .bv:active,.bv[aria-pressed="true"]{border-color:var(--lo2) var(--hi) var(--hi) var(--lo2);background-color:var(--paper2)}
 .bv:disabled{color:var(--ink3);cursor:default}
+.bv{transition:transform 100ms var(--ease-out)}
+.bv:active:not(:disabled){transform:translateY(1px)}
 .inset{background:var(--inset);border:2px solid;border-color:var(--lo2) var(--hi) var(--hi) var(--lo2)}
 .gl{font-family:var(--f-mono);letter-spacing:.12em;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:clip}
 
@@ -1047,9 +1049,39 @@ function glyph(seed,len){let h=hash(seed),out="";for(let i=0;i<len;i++){h=Math.i
 const jenny = n=>"J "+n.toLocaleString("en-US")+"-";
 
 /* 이미지 확대 보기 */
-document.addEventListener("click",e=>{const b=e.target.closest("[data-zoom]");if(!b)return;const z=$("#zoom");z.querySelector("img").src=IMG[b.dataset.zoom];z.querySelector("img").alt=b.dataset.cap;z.querySelector("figcaption").textContent=b.dataset.cap;z.hidden=false;});
-$("#zoom").addEventListener("click",()=>{$("#zoom").hidden=true;});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#zoom").hidden=true;});
+let zoomFrom=null;
+/* 확대 이미지를 썸네일 위치·크기로 옮기는 transform */
+function zoomFromRect(b,img){
+  const a=(b.querySelector("img")||b).getBoundingClientRect(), c=img.getBoundingClientRect();
+  if(!c.width) return null;
+  const dx=(a.left+a.width/2)-(c.left+c.width/2), dy=(a.top+a.height/2)-(c.top+c.height/2);
+  return `translate(${dx}px,${dy}px) scale(${a.width/c.width})`;
+}
+function zoomOpen(b){
+  const z=$("#zoom"), img=z.querySelector("img"), cap=z.querySelector("figcaption");
+  z.getAnimations({subtree:true}).forEach(a=>a.cancel());
+  img.src=IMG[b.dataset.zoom]; img.alt=b.dataset.cap; cap.textContent=b.dataset.cap;
+  zoomFrom=b; z.style.opacity="0"; z.hidden=false;
+  const run=()=>{
+    z.style.opacity="";
+    z.animate([{opacity:0},{opacity:1}],{duration:reduce?150:200,easing:EO});
+    const from=reduce?null:zoomFromRect(b,img);
+    if(from) img.animate([{transform:from},{transform:"none"}],{duration:260,easing:EO});
+    cap.animate([{opacity:0},{opacity:1}],{duration:200,delay:reduce?0:120,easing:EO,fill:"backwards"});
+  };
+  img.decode().then(run,run);
+}
+function zoomClose(){
+  const z=$("#zoom"), img=z.querySelector("img");
+  if(z.hidden||z._closing) return; z._closing=true;
+  const to=reduce||!zoomFrom||!zoomFrom.isConnected?null:zoomFromRect(zoomFrom,img);
+  const fade=z.animate([{opacity:1},{opacity:0}],{duration:reduce?150:200,easing:EO,fill:"forwards"});
+  if(to) img.animate([{transform:"none"},{transform:to}],{duration:200,easing:EO,fill:"forwards"});
+  Promise.race([fade.finished,wait(300)]).then(()=>{z.hidden=true; z._closing=false; z.getAnimations({subtree:true}).forEach(a=>a.cancel());});
+}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-zoom]");if(!b)return;zoomOpen(b);});
+$("#zoom").addEventListener("click",zoomClose);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")zoomClose();});
 /* ---------------- GATE ---------------- */
 $("#gateGl").textContent=glyph("gate",22);
 document.querySelectorAll("img.logo").forEach(i=>i.src=LOGO);
@@ -1163,11 +1195,18 @@ function enterApp(){
   renderList(); open(current||"kurapika",true);
   $("#q").focus({preventScroll:true});
 }
-$("#logout").addEventListener("click",()=>{
+$("#logout").addEventListener("click",async()=>{
+  const lo=$("#logout"); if(lo.disabled) return; lo.disabled=true;
   addLog("LOGOUT",license.name);
-  $("#app").hidden=true; $("#gate").hidden=false;
-  $("#card").classList.remove("inserted"); $("#led").className="strip";
-  $("#boot").innerHTML=""; $("#clerkMsg").textContent="어서 오세요. 라이선스 카드를 판독기에 넣어 주세요."; $("#insertBtn").disabled=false; $("#hunterName").disabled=false; $("#flipBtn").disabled=false;
+  const off=crtOff($("#app")); await Promise.race([off.finished,wait(450)]);
+  $("#app").hidden=true; off.cancel(); $("#app").style.transformOrigin=""; $("#gate").hidden=false;
+  crtOn($("#gate"));
+  $("#boot").innerHTML=""; $("#clerkMsg").textContent="카드를 돌려드립니다. 다음에 또 오세요.";
+  const c=$("#card"); c.classList.remove("inserted"); $("#led").className="strip busy";
+  if(!reduce) c.animate([{transform:"translateX(-50%) translateY(150px)"},{transform:"translateX(-50%) translateY(0)"}],{duration:600,delay:200,easing:EO,fill:"backwards"});
+  await wait(800);
+  $("#led").className="strip"; $("#clerkMsg").textContent="어서 오세요. 라이선스 카드를 판독기에 넣어 주세요.";
+  $("#insertBtn").disabled=false; $("#hunterName").disabled=false; $("#flipBtn").disabled=false; lo.disabled=false;
   unlocked.clear();
 });
 
@@ -1382,6 +1421,11 @@ function enterRecord(v){
   chartIO=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting) return; chartIO.unobserve(e.target); e.target._anims.forEach(a=>a.play());}),{threshold:.35});
   charts.forEach(c=>{c._anims=chartAnims(c); c._anims.forEach(a=>a.pause()); chartIO.observe(c);});
 }
+/* 스포일러를 열면 가려 두었던 내용의 흐림이 0.2초 동안 걷힌다 */
+function unblur(){
+  $("#view").querySelectorAll(".spoiler p,.blurbox>*:not(.bv)").forEach(el=>el.animate(
+    reduce?[{opacity:.4},{opacity:1}]:[{filter:"blur(5px)",opacity:.6},{filter:"blur(0)",opacity:1}],{duration:200,easing:EO}));
+}
 /* 육각형 외곽선이 그려지고 계통 점이 시계방향으로 찍힌 뒤, 막대가 왼쪽에서 차오른다 */
 function chartAnims(c){
   const a=[];
@@ -1418,7 +1462,7 @@ $("#view").addEventListener("click",e=>{
   const g=e.target.closest("[data-go]"); if(g){open(g.dataset.go);return;}
   const u=e.target.closest("[data-unlock]"); if(u){unlocked.add(u.dataset.unlock); addLog("UNLOCK",BY[u.dataset.unlock].name); open(u.dataset.unlock,true);return;}
   const c=e.target.closest("[data-cancel]"); if(c){addLog("CANCEL",BY[current].name); const back=prev&&prev!==current?prev:"kurapika"; open(back,true); return;}
-  const r=e.target.closest("[data-reveal]"); if(r){revealed.add(r.dataset.reveal); open(r.dataset.reveal,true);}
+  const r=e.target.closest("[data-reveal]"); if(r){revealed.add(r.dataset.reveal); open(r.dataset.reveal,true); unblur();}
 });
 
 /* ---------------- LOG ---------------- */
